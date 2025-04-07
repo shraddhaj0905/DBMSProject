@@ -59,4 +59,13 @@ const createWorkoutPlan = (req, res) => {
   });
 };
 
-module.exports = { loginTrainer,createWorkoutPlan };
+// ✅ Get all workout plans
+const getAllWorkoutPlans = (req, res) => {
+  const sql = "SELECT * FROM Workout_plan";
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: "Database error", details: err });
+    res.status(200).json(result);
+  });
+};
+
+module.exports = { loginTrainer,createWorkoutPlan,getAllWorkoutPlans};

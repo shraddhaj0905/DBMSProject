@@ -137,5 +137,13 @@ const loginMember = (req, res) => {
     });
   });
 };
+const getAllMemberships = (req, res) => {
+  const sql = "SELECT * FROM Membership";
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: "Database error", details: err });
+    res.status(200).json(result);
+  });
+};
 
-  module.exports = { loginMember, createMember };
+  module.exports = { loginMember, createMember,getAllMemberships };
+
