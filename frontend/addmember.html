@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Member</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-wrapper {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+      color: #555;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #764ba2;
+      box-shadow: 0 0 5px rgba(118, 75, 162, 0.5);
+    }
+
+    .goals-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .add-goal-btn {
+      margin-top: 10px;
+      background-color: #764ba2;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .add-goal-btn:hover {
+      background-color: #5a3c8c;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 30px;
+      background-color: #667eea;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #5661c4;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-wrapper">
+    <h2>Register New Member</h2>
+    <form action="/api/member/register" method="POST">
+      <label for="name">Full Name</label>
+      <input type="text" name="name" id="name" required>
+
+      <label for="dob">Date of Birth</label>
+      <input type="date" name="dob" id="dob" required>
+
+      <label for="weight">Weight (kg)</label>
+      <input type="number" name="weight" id="weight" required>
+
+      <label for="height">Height (cm)</label>
+      <input type="number" name="height" id="height" required>
+
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" required>
+
+      <label for="contact">Contact Number</label>
+      <input type="text" name="contact" id="contact" required>
+
+      <label for="emergency_contact">Emergency Contact</label>
+      <input type="text" name="emergency_contact" id="emergency_contact" required>
+
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+
+      <label>Fitness Goals</label>
+      <div class="goals-container" id="goals-container">
+        <input type="text" name="goals[]" placeholder="e.g. Weight Loss" required>
+      </div>
+      <button type="button" class="add-goal-btn" onclick="addGoalField()">➕ Add Goal</button>
+
+      <button type="submit" class="submit-btn">Register Member</button>
+    </form>
+  </div>
+
+  <script>
+    function addGoalField() {
+      const container = document.getElementById('goals-container');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = 'goals[]';
+      input.placeholder = 'e.g. Build Muscle';
+      input.required = true;
+      container.appendChild(input);
+    }
+  </script>
+</body>
+</html>

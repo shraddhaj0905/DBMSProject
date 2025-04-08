@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: url('https://imgs.search.brave.com/8QNOXSlJFYGgelke6JnSz9qTCeg8V1JT19MIfpAjeyA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTQz/MDYzMTUyMi9waG90/by9neW0td2l0aG91/dC1wZW9wbGUtd2l0/aC1sYXJnZS1ncm91/cC1vZi1leGVyY2lz/ZS1tYWNoaW5lcy5q/cGc_cz02MTJ4NjEy/Jnc9MCZrPTIwJmM9/d2daNG5zSTN3a0VC/MWVqd05ObVFwVEww/dXVrbjZXN2RVcnJS/c012ZGM0Zz0') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .register-container {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 40px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  }
+  
+  .register-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 28px;
+    color: #333;
+  }
+  
+  .register-form h2 span {
+    color: #2575fc;
+  }
+  
+  .form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .form-group {
+    flex: 1 1 calc(50% - 10px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group.full-width {
+    flex: 1 1 100%;
+  }
+  
+  .form-group label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #444;
+  }
+  
+  .input-icon {
+    position: relative;
+  }
+  
+  .input-icon i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+  }
+  
+  .input-icon input {
+    padding: 10px 10px 10px 35px;
+  }
+  
+  input,
+  select {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    transition: border-color 0.3s;
+    background-color: #fff;
+  }
+  
+  input:focus,
+  select:focus {
+    border-color: #2575fc;
+    outline: none;
+    background-color: #f9f9f9;
+  }
+  
+  .register-btn {
+    margin-top: 30px;
+    width: 100%;
+    background-color: #2575fc;
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .register-btn:hover {
+    background-color: #1b5fcd;
+  }
+  
+  @media (max-width: 600px) {
+    .form-group {
+      flex: 1 1 100%;
+    }
+  }

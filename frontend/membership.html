@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Membership</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1e3c72;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input, textarea, select {
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #1e3c72;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #16325c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create New Membership</h2>
+    <form action="/create-membership" method="POST">
+      <label for="price">Price (₹)</label>
+      <input type="number" id="price" name="price" placeholder="Enter membership price" required>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" placeholder="Enter membership benefits and details" required></textarea>
+
+      <label for="duration">Duration</label>
+      <select id="duration" name="duration" required>
+        <option value="">Select duration</option>
+        <option value="1 Month">1 Month</option>
+        <option value="3 Months">3 Months</option>
+        <option value="6 Months">6 Months</option>
+        <option value="1 Year">1 Year</option>
+      </select>
+
+      <button type="submit">Create Membership</button>
+    </form>
+  </div>
+</body>
+</html>

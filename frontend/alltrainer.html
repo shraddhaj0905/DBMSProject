@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Trainers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #c2e9fb, #a1c4fd);
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+
+    .trainer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .trainer-card {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .trainer-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .trainer-emoji {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .trainer-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 6px;
+    }
+
+    .trainer-specialty {
+      font-size: 0.95rem;
+      color: #7f8c8d;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🏋️‍♂️ Meet Our Trainers</h1>
+
+  <div class="trainer-grid">
+    <!-- Sample trainer cards (can be dynamically loaded using JS or backend templating) -->
+    <div class="trainer-card">
+      <div class="trainer-emoji">🏋️‍♂️</div>
+      <div class="trainer-name">Rahul Verma</div>
+      <div class="trainer-specialty">Strength Training</div>
+    </div>
+
+    <div class="trainer-card">
+      <div class="trainer-emoji">🏃‍♀️</div>
+      <div class="trainer-name">Aarti Nair</div>
+      <div class="trainer-specialty">Cardio Expert</div>
+    </div>
+
+    <div class="trainer-card">
+      <div class="trainer-emoji">🧘‍♂️</div>
+      <div class="trainer-name">Yogesh Singh</div>
+      <div class="trainer-specialty">Yoga & Flexibility</div>
+    </div>
+
+    <div class="trainer-card">
+      <div class="trainer-emoji">🥊</div>
+      <div class="trainer-name">Kavita Rao</div>
+      <div class="trainer-specialty">Kickboxing</div>
+    </div>
+  </div>
+</body>
+</html>

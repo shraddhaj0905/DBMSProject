@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #dbe6f6, #c5796d);
+      min-height: 100vh;
+    }
+
+    nav {
+      background-color: #6a0572;
+      padding: 15px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    nav h2 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .dashboard-container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      margin: 40px auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .admin-actions a {
+      display: block;
+      text-align: center;
+      padding: 15px;
+      background-color: #6a0572;
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-actions a:hover {
+      background-color: #51024e;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>🏋️ Gym Admin Panel</h2>
+    <div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="logout.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <h1>Admin Dashboard</h1>
+    <div class="admin-actions">
+      <a href="trainer.html">➕ Add Trainer</a>
+      <a href="addmember.html">🧍‍♂️ Register Member</a>
+      <a href="assignmembership.html">🎟️ Assign Membership</a>
+      <a href="membership.html">📋 Create Membership Plans</a>
+      <a href="alltrainer.html">🏋️‍♂️View all Trainers</a>
+      <a href="allmember.html">💪View all Members</a>
+    </div>
+  </div>
+</body>
+</html>
