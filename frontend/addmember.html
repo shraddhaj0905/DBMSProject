@@ -96,12 +96,51 @@
     .submit-btn:hover {
       background-color: #5661c4;
     }
+
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background-color: #333;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      min-width: 200px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      animation: fadein 0.5s forwards, fadeout 0.5s 3.5s forwards;
+    }
+
+    .toast.success {
+      background-color: #28a745;
+    }
+
+    .toast.error {
+      background-color: #dc3545;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeout {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+
   </style>
 </head>
 <body>
   <div class="form-wrapper">
     <h2>Register New Member</h2>
-    <form action="/api/member/register" method="POST">
+    <form action="#" method="POST">
       <label for="name">Full Name</label>
       <input type="text" name="name" id="name" required>
 
@@ -126,6 +165,9 @@
       <label for="password">Password</label>
       <input type="password" name="password" id="password" required>
 
+      <label for="membership_length">Membership Length (in months)</label>
+      <input type="number" name="membership_length" id="membership_length" min="1" required>
+
       <label>Fitness Goals</label>
       <div class="goals-container" id="goals-container">
         <input type="text" name="goals[]" placeholder="e.g. Weight Loss" required>
@@ -147,5 +189,8 @@
       container.appendChild(input);
     }
   </script>
+
+  <div id="toast-container"></div>
+  <script src="addmember.js"></script>
 </body>
 </html>

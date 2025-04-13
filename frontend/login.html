@@ -11,7 +11,7 @@
   <div class="login-container">
     <h2>Login to <span style="color:#2563eb">Gravox</span></h2>
     
-    <form onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+    <form id="loginform">
       <div class="form-group">
         <label for="username">Email or Username</label>
         <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -29,6 +29,10 @@
       <p>Don't have an account? <a href="register.html">Register here</a></p>
     </div>
   </div>
-
+  <div id="toast" class="toast hidden">
+    <span id="toast-message"></span>
+  </div>
+  
+  <script src="login.js"></script>
 </body>
 </html>

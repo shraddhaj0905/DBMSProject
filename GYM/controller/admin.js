@@ -91,16 +91,16 @@ const addTrainer = async (req, res) => {
 
 // Admin-only: Create a membership plan
 const createMembership = (req, res) => {
-  const { duration, price, description, workout_id } = req.body;
+  const { duration, price, description } = req.body;
 
   // Validate input
-  if (!duration || !price || !description || !workout_id) {
+  if (!duration || !price || !description ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   // Check if the workout plan exists
-  const checkWorkoutSql = "SELECT * FROM Workout_plan WHERE workout_id = ?";
-  db.query(checkWorkoutSql, [workout_id], (err, workoutResult) => {
+  const checkWorkoutSql = "SELECT * FROM Workout_plan WHERE = ?";
+  db.query(checkWorkoutSql, (err, workoutResult) => {
     if (err) {
       console.error("❌ Workout check failed:", err);
       return res.status(500).json({ error: "Database error" });
@@ -112,11 +112,11 @@ const createMembership = (req, res) => {
 
     // Insert into Membership
     const insertSql = `
-      INSERT INTO Membership (duration, price, description, workout_id)
+      INSERT INTO Membership (duration, price, description)
       VALUES (?, ?, ?, ?)
     `;
 
-    const values = [duration, price, description, workout_id];
+    const values = [duration, price, description];
 
     db.query(insertSql, values, (err, result) => {
       if (err) {

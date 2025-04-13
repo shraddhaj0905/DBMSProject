@@ -74,7 +74,7 @@
 <body>
   <div class="container">
     <h2>Create New Membership</h2>
-    <form action="/create-membership" method="POST">
+    <form id="membershipForm">
       <label for="price">Price (₹)</label>
       <input type="number" id="price" name="price" placeholder="Enter membership price" required>
 
@@ -93,5 +93,6 @@
       <button type="submit">Create Membership</button>
     </form>
   </div>
+  <script src="membership.js"></script>
 </body>
 </html>

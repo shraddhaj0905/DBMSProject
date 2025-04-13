@@ -16,6 +16,7 @@ const createMember = async (req, res) => {
       contact,
       emergency_contact,
       password,
+      membership_length,
       goals // Array of strings
     } = req.body;
 
@@ -23,9 +24,9 @@ const createMember = async (req, res) => {
     if (
       !name || !dob || !weight || !height || !email ||
       !contact || !emergency_contact || !password ||
-      !Array.isArray(goals) || goals.length === 0
+      !membership_length || !Array.isArray(goals) || goals.length === 0
     ) {
-      return res.status(400).json({ error: "All fields including at least one goal are required." });
+      return res.status(400).json({ error: "All fields including membership length and at least one goal are required." });
     }
 
     // Hash password
@@ -34,12 +35,13 @@ const createMember = async (req, res) => {
     // Insert into Members table
     const memberSql = `
       INSERT INTO Members 
-      (name, dob, weight, height, email, contact, emergency_contact, password)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (name, dob, weight, height, email, contact, emergency_contact, password, membership_length)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const memberValues = [
       name, dob, weight, height,
-      email, contact, emergency_contact, hashedPassword
+      email, contact, emergency_contact,
+      hashedPassword, membership_length
     ];
 
     db.query(memberSql, memberValues, (memberErr, memberResult) => {
@@ -72,6 +74,41 @@ const createMember = async (req, res) => {
   }
 };
 
+const deleteMember = (req, res) => {
+  const memberId = req.params.id;
+
+  if (!memberId) {
+    return res.status(400).json({ error: "Member ID is required." });
+  }
+
+  // First delete the goals associated with the member
+  const deleteGoalsSql = `DELETE FROM Goals WHERE m_id = ?`;
+
+  db.query(deleteGoalsSql, [memberId], (goalErr) => {
+    if (goalErr) {
+      console.error("❌ Error deleting goals:", goalErr);
+      return res.status(500).json({ error: "Failed to delete goals", details: goalErr.message });
+    }
+
+    // Now delete the member
+    const deleteMemberSql = `DELETE FROM Members WHERE id = ?`;
+
+    db.query(deleteMemberSql, [memberId], (memberErr, result) => {
+      if (memberErr) {
+        console.error("❌ Error deleting member:", memberErr);
+        return res.status(500).json({ error: "Failed to delete member", details: memberErr.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Member not found." });
+      }
+
+      res.status(200).json({ message: "✅ Member and related goals deleted successfully." });
+    });
+  });
+};
+
+module.exports = {deleteMember}
 module.exports = { createMember };
 
 
@@ -145,5 +182,102 @@ const getAllMemberships = (req, res) => {
   });
 };
 
-  module.exports = { loginMember, createMember,getAllMemberships };
+const updateMember = async (req, res) => {
+  const memberId = req.params.id;
+
+  const {
+    name,
+    dob,
+    weight,
+    height,
+    email,
+    contact,
+    emergency_contact,
+    password,
+    membership_length,
+    goals // optional: array of updated goals
+  } = req.body;
+
+  if (
+    !name || !dob || !weight || !height || !email ||
+    !contact || !emergency_contact || !membership_length
+  ) {
+    return res.status(400).json({ error: "All required fields must be filled." });
+  }
+
+  try {
+    // Hash the new password if provided
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+
+    // Build dynamic SQL query
+    const fieldsToUpdate = [
+      "name = ?",
+      "dob = ?",
+      "weight = ?",
+      "height = ?",
+      "email = ?",
+      "contact = ?",
+      "emergency_contact = ?",
+      "membership_length = ?"
+    ];
+    const values = [
+      name, dob, weight, height,
+      email, contact, emergency_contact,
+      membership_length
+    ];
+
+    if (hashedPassword) {
+      fieldsToUpdate.push("password = ?");
+      values.push(hashedPassword);
+    }
+
+    values.push(memberId);
+
+    const updateSql = `UPDATE Members SET ${fieldsToUpdate.join(", ")} WHERE id = ?`;
+
+    db.query(updateSql, values, (err, result) => {
+      if (err) {
+        console.error("❌ Error updating member:", err);
+        return res.status(500).json({ error: "Update failed", details: err.message });
+      }
+
+      // If goals are provided, update them
+      if (Array.isArray(goals)) {
+        // First delete existing goals
+        const deleteGoalsSql = `DELETE FROM Goals WHERE m_id = ?`;
+
+        db.query(deleteGoalsSql, [memberId], (delErr) => {
+          if (delErr) {
+            console.error("❌ Error deleting old goals:", delErr);
+            return res.status(500).json({ error: "Failed to update goals", details: delErr.message });
+          }
+
+          if (goals.length > 0) {
+            const insertGoalsSql = `INSERT INTO Goals (goal, m_id) VALUES ?`;
+            const goalValues = goals.map(goal => [goal, memberId]);
+
+            db.query(insertGoalsSql, [goalValues], (goalErr) => {
+              if (goalErr) {
+                console.error("❌ Error inserting new goals:", goalErr);
+                return res.status(500).json({ error: "Failed to insert updated goals", details: goalErr.message });
+              }
+
+              res.status(200).json({ message: "✅ Member and goals updated successfully." });
+            });
+          } else {
+            res.status(200).json({ message: "✅ Member updated. No new goals added." });
+          }
+        });
+      } else {
+        res.status(200).json({ message: "✅ Member updated successfully." });
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error updating member:", error);
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+};
+
+
+  module.exports = { loginMember, createMember,getAllMemberships ,deleteMember , updateMember};
 
