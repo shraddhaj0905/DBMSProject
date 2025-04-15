@@ -50,26 +50,22 @@ const loginAdmin = (req, res) => {
   });
 };
 
-// Admin-only: Add new trainer without password
 const addTrainer = async (req, res) => {
   try {
-    const { name, age, shift, salary, contact, password, specialization } = req.body;
+    const { name, age, shift, salary, contact, specialization } = req.body;
 
     // Validate all required fields
-    if (!name || !age || !shift || !salary || !contact || !password || !specialization) {
-      return res.status(400).json({ error: "All fields including password are required." });
+    if (!name || !age || !shift || !salary || !contact || !specialization) {
+      return res.status(400).json({ error: "All fields are required." });
     }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = `
       INSERT INTO Trainer 
-      (name, age, shift, salary, contact, password, specialization)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (name, age, shift, salary, contact, specialization)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [name, age, shift, salary, contact, hashedPassword, specialization];
+    const values = [name, age, shift, salary, contact, specialization];
 
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -89,48 +85,33 @@ const addTrainer = async (req, res) => {
 };
 
 
-// Admin-only: Create a membership plan
 const createMembership = (req, res) => {
-  const { duration, price, description } = req.body;
+  const { duration, price, description, workout_id } = req.body;
 
-  // Validate input
-  if (!duration || !price || !description ) {
+  if (!duration || !price || !description || !workout_id) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  // Check if the workout plan exists
-  const checkWorkoutSql = "SELECT * FROM Workout_plan WHERE = ?";
-  db.query(checkWorkoutSql, (err, workoutResult) => {
+  const insertSql = `
+    INSERT INTO Membership (duration, price, description, workout_id)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  const values = [duration, price, description, workout_id];
+
+  db.query(insertSql, values, (err, result) => {
     if (err) {
-      console.error("❌ Workout check failed:", err);
+      console.error("❌ Error inserting membership:", err);
       return res.status(500).json({ error: "Database error" });
     }
 
-    if (workoutResult.length === 0) {
-      return res.status(404).json({ error: "Workout plan not found" });
-    }
-
-    // Insert into Membership
-    const insertSql = `
-      INSERT INTO Membership (duration, price, description)
-      VALUES (?, ?, ?, ?)
-    `;
-
-    const values = [duration, price, description];
-
-    db.query(insertSql, values, (err, result) => {
-      if (err) {
-        console.error("❌ Error inserting membership:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
-
-      res.status(201).json({
-        message: "✅ Membership created successfully",
-        membership_id: result.insertId,
-      });
+    res.status(201).json({
+      message: "✅ Membership created successfully",
+      membership_id: result.insertId,
     });
   });
 };
+
 
 
 // ✅ Get all members
@@ -160,56 +141,206 @@ const getAllWorkoutPlans = (req, res) => {
   });
 };
 
-// ✅ Get all memberships
 const getAllMemberships = (req, res) => {
   const sql = "SELECT * FROM Membership";
   db.query(sql, (err, result) => {
-    if (err) return res.status(500).json({ error: "Database error", details: err });
+    if (err) {
+      return res.status(500).json({ error: "Database error", details: err });
+    }
+    console.log(result); // Log the query result to verify the response
     res.status(200).json(result);
   });
 };
 
 
-const buyMembership = (req, res) => {
-  const { m_id, mship_id, start_date } = req.body;
 
-  // Basic validation
-  if (!m_id || !mship_id || !start_date) {
-    return res.status(400).json({ error: "m_id, mship_id, and start_date are required" });
+
+
+    // Create Workout Plan (Admin only)
+    const createWorkoutPlan = (req, res) => {
+      const { exercises, diet } = req.body;
+    
+      // Validation
+      if (!exercises || !diet) {
+        return res.status(400).json({ error: "Exercises and diet are required." });
+      }
+    
+      const sql = `
+        INSERT INTO Workout_plan (exercises, diet)
+        VALUES (?, ?)
+      `;
+    
+      db.query(sql, [exercises, diet], (err, result) => {
+        if (err) {
+          console.error("❌ Error inserting workout plan:", err);
+          return res.status(500).json({ error: "Database error", details: err.message });
+        }
+    
+        res.status(201).json({
+          message: "✅ Workout plan created successfully",
+          workout_id: result.insertId, // return auto-generated ID
+        });
+      });
+    };
+
+ 
+    
+
+    const createMember = async (req, res) => {
+      const { name, dob, weight, height, email, contact, emergency_contact, goals } = req.body;
+    
+      if (!name || !dob || !weight || !height || !email || !contact || !emergency_contact || !Array.isArray(goals)) {
+        return res.status(400).json({ error: "All fields and an array of goals are required." });
+      }
+    
+      const sqlMember = `
+        INSERT INTO Members 
+        (name, dob, weight, height, email, contact, emergency_contact)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+      const memberValues = [name, dob, weight, height, email, contact, emergency_contact];
+    
+      db.query(sqlMember, memberValues, (err, result) => {
+        if (err) {
+          console.error("❌ DB error (Members):", err);
+          return res.status(500).json({ error: "Database error while inserting member", details: err.message });
+        }
+    
+        const memberId = result.insertId;
+    
+        if (goals.length === 0) {
+          return res.status(201).json({ message: "✅ Member added without goals", memberId });
+        }
+    
+        // Prepare bulk insert for goals
+        const goalValues = goals.map(goal => [goal, memberId]);
+        const sqlGoals = `INSERT INTO Goals (goal, m_id) VALUES ?`;
+    
+        db.query(sqlGoals, [goalValues], (goalErr, goalResult) => {
+          if (goalErr) {
+            console.error("❌ DB error (Goals):", goalErr);
+            return res.status(500).json({ error: "Database error while inserting goals", details: goalErr.message });
+          }
+    
+          res.status(201).json({ message: "✅ Member and goals added", memberId });
+        });
+      });
+    };
+ 
+    
+const assignTrainer = async (req, res) => {
+  const { memberId, trainerId } = req.body;
+
+  if (!memberId || !trainerId) {
+    return res.status(400).json({ error: 'Both memberId and trainerId are required.' });
   }
 
-  // Check if Member exists
-  const checkMemberSql = "SELECT * FROM Members WHERE m_id = ?";
-  db.query(checkMemberSql, [m_id], (err, memberResult) => {
-    if (err) return res.status(500).json({ error: "Database error", details: err.message });
-    if (memberResult.length === 0) {
+  const sql = `UPDATE Members SET tr_id = ? WHERE m_id = ?`;
+
+  db.query(sql, [trainerId, memberId], (err, result) => {
+    if (err) {
+      console.error("❌ DB error while assigning trainer:", err);
+      return res.status(500).json({ error: "Database error while assigning trainer", details: err.message });
+    }
+
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Member not found" });
     }
 
-    // Check if Membership exists
-    const checkMembershipSql = "SELECT * FROM Membership WHERE Mship_id = ?";
-    db.query(checkMembershipSql, [mship_id], (err, membershipResult) => {
-      if (err) return res.status(500).json({ error: "Database error", details: err.message });
-      if (membershipResult.length === 0) {
-        return res.status(404).json({ error: "Membership not found" });
-      }
-
-      // Insert into Buy table
-      const insertSql = "INSERT INTO Buy (start_date, M_id, Mship_id) VALUES (?, ?, ?)";
-      db.query(insertSql, [start_date, m_id, mship_id], (err, result) => {
-        if (err) {
-          console.error("❌ Error inserting into Buy:", err);
-          return res.status(500).json({ error: "Failed to assign membership", details: err.message });
-        }
-
-        res.status(201).json({ message: "✅ Membership successfully assigned to member" });
-      });
-    });
+    res.status(200).json({ message: "✅ Trainer assigned to member successfully" });
   });
 };
 
-  module.exports = { addTrainer ,loginAdmin,createMembership,getAllMembers,
-    getAllTrainers,
-    getAllWorkoutPlans,
-    getAllMemberships,buyMembership};
+const assignMembership = async (req, res) => {
+  const { memberId, membershipId, startDate } = req.body;
 
+  if (!memberId || !membershipId || !startDate) {
+    return res.status(400).json({ error: 'Member ID, Membership ID, and Start Date are required.' });
+  }
+
+  // Insert into the Buy table (Assigning Membership)
+  const sql = `INSERT INTO Buy (start_date, M_id, Mship_id) VALUES (?, ?, ?)`;
+
+  db.query(sql, [startDate, memberId, membershipId], (err, result) => {
+    if (err) {
+      console.error("❌ DB error while assigning membership:", err);
+      return res.status(500).json({ error: "Database error while assigning membership", details: err.message });
+    }
+
+    res.status(200).json({ message: "✅ Membership assigned to member successfully" });
+  });
+};
+
+const deleteMember = async (req, res) => {
+  const memberId = req.params.id;
+
+  console.log('Attempting to delete member with ID:', memberId); // Log the member ID for debugging
+
+  try {
+    // Ensure memberId is valid
+    if (isNaN(memberId)) {
+      return res.status(400).json({ error: 'Invalid member ID' });
+    }
+
+    // SQL to delete the member
+    const sql = 'DELETE FROM Members WHERE m_id = ?';
+
+    // Execute the DELETE statement
+    const result = await db.execute(sql, [memberId]);
+
+    // If no rows are deleted, return an error indicating that the member doesn't exist
+    if (result && result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Member not found' });
+    }
+
+    // If deletion was successful, return a success message
+    return res.status(200).json({ message: 'Member deleted successfully' });
+  } catch (err) {
+    console.error('❌ Error deleting member:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+const deleteTrainer = async (req, res) => {
+  const trainerId = req.params.id;
+
+  console.log('Attempting to delete trainer with ID:', trainerId); // Log trainer ID for debugging
+
+  try {
+    // Ensure trainerId is valid
+    if (isNaN(trainerId)) {
+      return res.status(400).json({ error: 'Invalid trainer ID' });
+    }
+
+    // SQL to delete the trainer
+    const sql = 'DELETE FROM Trainer WHERE tr_id = ?';
+
+    // Execute the DELETE statement
+    const result = await db.execute(sql, [trainerId]);
+
+    // If no rows are deleted, return an error indicating that the trainer doesn't exist
+    if (result && result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Trainer not found' });
+    }
+
+    // If deletion was successful, return a success message
+    return res.status(200).json({ message: 'Trainer deleted successfully' });
+  } catch (err) {
+    console.error('❌ Error deleting trainer:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+
+
+
+
+    module.exports = { createWorkoutPlan,getAllWorkoutPlans,createMember, addTrainer ,loginAdmin,createMembership,getAllMembers,
+      getAllTrainers,
+      getAllWorkoutPlans,
+      getAllMemberships,assignTrainer,assignMembership,deleteMember,deleteTrainer};
+    
